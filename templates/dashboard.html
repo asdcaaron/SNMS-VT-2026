@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | SNMS-VT-2026{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">NETWORK OPERATIONS</p><h2>Monitoring Dashboard</h2><p class="muted">Overview of registered network devices.</p></div>
+  <div class="dashboard-date">SNMS-VT-2026</div>
+</section>
+
+<section class="stats-grid" aria-label="Network statistics">
+  <div class="stat-card"><p>Total Devices</p><h3>{{ stats.total_devices }}</h3></div>
+  <div class="stat-card online-card"><p>Online</p><h3>{{ stats.online_devices }}</h3></div>
+  <div class="stat-card offline-card"><p>No Response</p><h3>{{ stats.no_response_devices }}</h3></div>
+  <div class="stat-card unknown-card"><p>Unknown</p><h3>{{ stats.unknown_devices }}</h3></div>
+  <div class="stat-card"><p>Average Response Time</p><h3>{% if stats.average_response_ms is not none %}{{ '%.2f'|format(stats.average_response_ms) }} ms{% else %}--{% endif %}</h3></div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><h3>Registered Devices</h3><p class="muted">Devices currently stored in the database.</p></div></div>
+  <div class="table-wrapper"><table><thead><tr><th>Device Name</th><th>IP Address</th><th>Status</th><th>Last Checked</th></tr></thead>
+    <tbody>{% for device in recent_devices %}
+      <tr><td>{{ device.device_name }}</td><td>{{ device.ip_address }}</td><td><span class="status-badge {{ device.last_status }}">{{ device.last_status.replace('_', ' ') }}</span></td><td>{% if device.last_checked %}{{ device.last_checked }}{% else %}Not checked{% endif %}</td></tr>
+    {% else %}<tr><td colspan="4" class="empty-state">No devices registered yet.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><h3>Recent Connectivity Events</h3><p class="muted">Observed status changes saved in SQLite.</p></div></div>
+  <div class="table-wrapper"><table><thead><tr><th>Device</th><th>Change</th><th>Time</th><th>Details</th></tr></thead><tbody>
+    {% for event in recent_events %}<tr><td>{{ event.device.device_name }}</td><td>{{ event.previous_status.replace('_', ' ') }} → {{ event.new_status.replace('_', ' ') }}</td><td>{{ event.event_time }}</td><td>{{ event.description or 'Status changed' }}</td></tr>
+    {% else %}<tr><td colspan="4" class="empty-state">No connectivity events recorded yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section class="panel system-panel"><h3>System Information</h3><p>This application is running as a local development prototype. Automatic device monitoring will be added in a later stage.</p><p><strong>ICMP limitation:</strong> A device that does not respond to ping may still be working if a firewall blocks ICMP. The system records “No response,” not confirmed physical downtime.</p></section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>{% endblock %}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SNMS-VT-2026{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">VT</span><span>Velma Telcom <small>Network Monitoring System</small></span></a>
+    <span class="environment"><span class="dot"></span> Local application</span>
+  </header>
+  <main class="page-shell">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>SNMS-VT-2026 <span>·</span> Velma Telcom Network Monitoring System</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
